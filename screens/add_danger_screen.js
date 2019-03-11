@@ -303,7 +303,7 @@ class Add_Danger extends Component {
     }
 
     // If there is Id on local MS
-    if(this.state.it_is_on_local_MS){
+    if(this.state.it_is_on_local_MS == 'si'){
 
       // If id is defined and length is more than 0
       if(this.state.id_management_system != null && this.state.id_management_system.length > 0){

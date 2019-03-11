@@ -1,3 +1,5 @@
+// The backup is for text displayinh message for automatic notifications
+
 import React, { Component } from 'react';
 import {
   Alert,
@@ -258,6 +260,28 @@ class HelloWorldApp extends Component {
             }}
 
           />
+
+          <Text style={{ 
+
+              color: "white", 
+              "textAlign": 'center', 
+              margin: 30,
+              // fontWeight: 'bold', 
+              // textDecorationStyle:'solid',
+              backgroundColor: 'rgba(63, 95, 224,0.7)',
+              // position: "absolute",
+              // top: -30,
+              borderRadius: 10, 
+              padding: 15,
+              justifyContent: 'center',
+              elevation: 2,
+
+            }}>
+
+            Para recibir alertas automáticas de peligros, debes seleccionar "Ver Mapa de Peligros" y mantener abierta la app en esta sección (puedes ocultar la app y abrir otras, o incluso bloquear tu celular, pero no debes cerrarla)
+
+          </Text>
+
 
         </ImageBackground>
 

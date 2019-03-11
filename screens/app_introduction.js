@@ -47,14 +47,14 @@ const slides = [
     imageStyle: styles.image,
     backgroundColor: 'rgba(158,133,0,0.8)',
   },
-  {
-    key: 'danger_alert',
-    title: 'Alertas automáticas de peligros',
-    text: 'Manteniendo abierta la app, podrás recibir automáticamente alertas de peligros que estén cercanos a tu posición \n \n ¡No cierres la app!',
-    image: require('../images/alert.png'),
-    imageStyle: styles.image,
-     backgroundColor: 'rgba(63,95,224,0.8)',
-  }
+  // {
+  //   key: 'danger_alert',
+  //   title: 'Alertas automáticas de peligros',
+  //   text: 'Manteniendo abierta la app en la sección del "Mapa de Peligros", podrás recibir automáticamente alertas de peligros que estén cercanos a tu posición \n \n ¡No cierres la app!',
+  //   image: require('../images/alert.png'),
+  //   imageStyle: styles.image,
+  //    backgroundColor: 'rgba(63,95,224,0.8)',
+  // }
 ];
 
 class App_Introduction extends React.Component {

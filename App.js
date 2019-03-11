@@ -26,6 +26,7 @@ import Loading_Screen from "./screens/loading_screen.js"
 // stack of screens of App
 const app_stack = {
   
+  // Dangers_Map: Dangers_Map,
   Login: Login,
   Home: Home,
   Add_Danger: Add_Danger,

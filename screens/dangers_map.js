@@ -128,6 +128,9 @@ class Dangers_Map extends Component {
     this.render_area_filter = this.render_area_filter.bind(this);
     this.local_notyfication = this.local_notyfication.bind(this);
 
+    // testing
+    this.test_notification = this.test_notification.bind(this);
+
   }
 
   // Options for header bar
@@ -297,6 +300,8 @@ class Dangers_Map extends Component {
 
       }
 
+      console.log(user_is_near_risk_list.includes(true) ? 'user is near risk' : 'not risk')
+
       // Get markers with true values(and id) 
       markers_not_alerted_yet = this.state.places_markers.filter((marker, index) => user_is_near_risk_list[index]);
 
@@ -353,7 +358,8 @@ class Dangers_Map extends Component {
         }
 
         // If app is in background
-        else if(this.state.app_state == "background"){
+        // else if(this.state.app_state == "background"){
+        else{
 
           // Show notification
           this.local_notyfication();
@@ -366,6 +372,19 @@ class Dangers_Map extends Component {
 
   }
 
+  test_notification(add_ubication = true){
+    // Send notification
+    PushNotification.localNotification({
+    
+      /* iOS and Android properties */
+      title: "test", // (optional)
+      message:  "testing" + (add_ubication != null ? this.state.user_position.latitude + ' ' + this.state.user_position.longitude : ' not location'), // (required)
+      playSound: true, // (optional) default: true
+      soundName: 'default', // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
+    
+    });
+
+  }
   // Function for get current position and analize risk
   get_current_position_and_analize_risk(){
 
@@ -375,6 +394,13 @@ class Dangers_Map extends Component {
         (position) => {
 
             // console.log(position);
+
+            // this.test_notification();
+
+            // console.log('position has changed. Lat: ' + position.coords.latitude + ', Long: ' + position.coords.longitude);
+
+            console.log(this.state.user_position.latitude == position.coords.latitude && this.state.user_position.longitude == position.coords.longitude ? 'Same pos' : 'Diff pos');
+
 
             // Get user position
             // Position has altitude!!! Maybe we can add altitude to location on map for distinguis between floors in a factory
@@ -412,7 +438,7 @@ class Dangers_Map extends Component {
         // {timeout: 100000000}
 
         // This is new (implemented with Google gps) (22-02-2019 16:50)
-        { enableHighAccuracy: true, distanceFilter: 3, interval:100 }
+        { enableHighAccuracy: true, distanceFilter: 0, interval:0, fastestInterval: 0 }
     ); 
 
   }
@@ -621,7 +647,7 @@ class Dangers_Map extends Component {
       var list = [];
 
       // Add first element for area filter list
-      list.push(<Picker.Item label="Todas las areas" value="todos" />)
+      list.push(<Picker.Item key="todos" label="Todas las areas" value="todos" />)
 
       // Iterate over each area of company
       Object.keys(this.state.initial_areas_of_company).map( (key_dict, index) => {
@@ -714,16 +740,31 @@ class Dangers_Map extends Component {
 
             <MapView
 
-              showsUserLocation
-              followsUserLocation
+              // showsUserLocation = {true}
+              // followsUserLocation = {true}
               showsMyLocationButton = {true}
               initialRegion = {this.state.region}
               mapType = "satellite"
               region = { this.state.region }
               style = {{width: '100%', height: '100%',zIndex: 0}}
-              showsMyLocationButton = {true}
+              // showsMyLocationButton = {true}
+              // onUserLocationChange = {(position) => this.change_location_test(position)}
 
             >
+
+              <MapView.Marker
+
+                key = 'user_position'
+
+                coordinate = {{latitude: this.state.user_position.latitude, longitude: this.state.user_position.longitude }}
+
+                // onPress = {() => this.props.navigation.push("Danger_Details", {marker: marker, area_name: this.state.initial_areas_of_company[marker.area_name]})}
+
+                // pinColor = "red"
+
+                image = {require('../images/hard_hat.png')}
+                
+              />
 
               { 
 
@@ -733,7 +774,7 @@ class Dangers_Map extends Component {
                        
                   <MapView.Marker
 
-                    key = {index}
+                    key={index}
 
                     coordinate = {{latitude: parseFloat(marker.latitude), longitude: parseFloat(marker.longitude) }}
 
@@ -791,13 +832,13 @@ class Dangers_Map extends Component {
 
                 >
 
-                <Picker.Item label="Todos activos" value="todos" />
+                <Picker.Item key = "todos" label="Todos activos" value="todos" />
 
-                <Picker.Item label="Sin control" value="sin_control" />
+                <Picker.Item key = "sin_control" label="Sin control" value="sin_control" />
 
-                <Picker.Item label="Controlado" value="controlado" />
+                <Picker.Item key = "controlado" label="Controlado" value="controlado" />
 
-                <Picker.Item label="Eliminado" value="eliminado" />
+                <Picker.Item key = "eliminado" label="Eliminado" value="eliminado" />
 
               </Picker> 
 
