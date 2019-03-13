@@ -32,6 +32,12 @@ import Geolocation from 'react-native-geolocation-service';
 import PushNotification from 'react-native-push-notification';
 // import PushController from './push_notification_service.js';
 
+// import BackgroundTask from 'react-native-background-task'
+// import BackgroundJob from 'react-native-background-job';
+
+import BackgroundGeolocation from 'react-native-mauron85-background-geolocation';
+
+
 // Limit to risk
 // Meters
 const limit_dist_to_risk = 10;
@@ -86,6 +92,88 @@ body_danger_alert = '¡Cuidado! Estás muy cerca de un peligro';
 button_danger_alert = 'Me cuidaré';
 notification_action_danger_alert = "Ver peligro";
 
+// // Background task
+// BackgroundTask.define(() => {
+
+//   console.log('HELLO FROM BACKGROUND');
+
+//   BackgroundTask.finish();
+
+// });
+ 
+// const regularJobKey = "regularJobKey";
+
+// BackgroundJob.register({
+
+//   jobKey: regularJobKey,
+
+//   job: () => backgroundFunction(),
+
+// });
+
+// function backgroundFunction(){
+
+//   console.log("new background function");
+
+//   // console.log(this);
+//   // Geolocation.clearWatch(this.watchId);
+
+//   // this.global_watchId = Geolocation.watchPosition(
+//   Geolocation.watchPosition(
+
+//       (position) => {
+
+//           console.log('new watch position function on background');
+
+//           // // this.test_notification();
+
+//           // // console.log('position has changed. Lat: ' + position.coords.latitude + ', Long: ' + position.coords.longitude);
+
+//           // // console.log(this.state.user_position.latitude == position.coords.latitude && this.state.user_position.longitude == position.coords.longitude ? 'Same pos' : 'Diff pos');
+
+
+//           // // Get user position
+//           // // Position has altitude!!! Maybe we can add altitude to location on map for distinguis between floors in a factory
+//           // this.setState({ 
+
+//           //   user_position: {
+
+//           //     latitude: position.coords.latitude, 
+//           //     longitude: position.coords.longitude
+
+//           //   },
+
+//           //   region: {
+
+//           //     latitude: position.coords.latitude, 
+//           //     longitude: position.coords.longitude, 
+//           //     latitudeDelta: initial_latitude_delta,
+//           //     longitudeDelta: initial_longitude_delta,
+
+
+//           //   }
+
+//           // })
+
+//           // // function for calculate distance to risk_markers
+//           // this.calculate_distance_to_markers();
+
+//       },
+//       (error) => console.log(new Date(), error),
+//       // {enableHighAccuracy: true, timeout: 100000}
+//       // If gps is not working, so uncomment next line
+//       // {timeout: 10000, enableHighAccuracy: true}
+
+//       // Next one works always (22-02-2019 16:44)
+//       // {timeout: 100000000}
+
+//       // This is new (implemented with Google gps) (22-02-2019 16:50)
+//       // { enableHighAccuracy: true, distanceFilter: 0, interval:0, fastestInterval: 0 }
+//       { enableHighAccuracy: true, distanceFilter: 0, interval:0, fastestInterval: 0 }
+//   ); 
+
+// }
+
 // class
 class Dangers_Map extends Component {
 
@@ -120,6 +208,8 @@ class Dangers_Map extends Component {
       // App state
       app_state: AppState.currentState,
 
+      play_back_location: false,
+
     };
 
     //Add function for use in this component
@@ -130,6 +220,7 @@ class Dangers_Map extends Component {
 
     // testing
     this.test_notification = this.test_notification.bind(this);
+    this.manage_click_test = this.manage_click_test.bind(this);
 
   }
 
@@ -158,10 +249,164 @@ class Dangers_Map extends Component {
     };
   };
 
+
   // Function for manage app change state
   _handleAppStateChange = (nextAppState) => {
 
     console.log("app state has changed to: " + nextAppState);
+
+    // console.log('watch id: ' + this.watchId);
+
+    // console.log(this);
+
+    if(nextAppState == "background"){
+
+
+      // // Get initial location
+      // BackgroundGeolocation.getCurrentLocation(location => {
+        
+      //   // console.log(location);
+
+      //   this.setState({ 
+
+      //     user_position: {
+
+      //       latitude: location.latitude, 
+      //       longitude: location.longitude
+
+      //     },
+
+      //     region: {
+
+      //       latitude: location.latitude, 
+      //       longitude: location.longitude, 
+      //       latitudeDelta: initial_latitude_delta,
+      //       longitudeDelta: initial_longitude_delta,
+
+
+      //     }
+
+      //   });
+
+      //   }, (error) => {
+
+      //     setTimeout(() => {
+
+      //       Alert.alert('Error obtaining current location', JSON.stringify(error));
+
+      //     }, 100);
+
+      // });
+
+      // BackgroundGeolocation.start();
+
+      // BackgroundGeolocation.forceSync();
+
+    //   BackgroundGeolocation.checkStatus(status => {
+    //     console.log('[INFO] BackgroundGeolocation service is running', status.isRunning);
+    //     console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
+    //     console.log('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
+
+    //     // you don't need to check status before start (this is just the example)
+    //     if (!status.isRunning) {
+    //       BackgroundGeolocation.start(); //triggers start on start event
+    //     }
+        
+    //   });
+
+    //   // BackgroundTask.schedule();
+    //   // BackgroundJob.schedule(backgroundJob);
+
+    //   // BackgroundJob.schedule({
+
+    //   //   jobKey: regularJobKey,
+    //   //   notificationTitle: "Hi!",
+    //   //   notificationText: "I'm the BackgroundJob",
+    //   //   period: 2000,
+    //   //   exact: true
+    //   // });
+
+    //   // Geolocation.clearWatch(this.watchId);
+
+    //   // this.watchId = Geolocation.watchPosition(
+
+    //   //     (position) => {
+
+    //   //         console.log('new watch position function');
+
+    //   //         // this.test_notification();
+
+    //   //         // console.log('position has changed. Lat: ' + position.coords.latitude + ', Long: ' + position.coords.longitude);
+
+    //   //         console.log(this.state.user_position.latitude == position.coords.latitude && this.state.user_position.longitude == position.coords.longitude ? 'Same pos' : 'Diff pos');
+
+
+    //   //         // Get user position
+    //   //         // Position has altitude!!! Maybe we can add altitude to location on map for distinguis between floors in a factory
+    //   //         this.setState({ 
+
+    //   //           user_position: {
+
+    //   //             latitude: position.coords.latitude, 
+    //   //             longitude: position.coords.longitude
+
+    //   //           },
+
+    //   //           region: {
+
+    //   //             latitude: position.coords.latitude, 
+    //   //             longitude: position.coords.longitude, 
+    //   //             latitudeDelta: initial_latitude_delta,
+    //   //             longitudeDelta: initial_longitude_delta,
+
+
+    //   //           }
+
+    //   //         })
+
+    //   //         // function for calculate distance to risk_markers
+    //   //         this.calculate_distance_to_markers();
+
+    //   //     },
+    //   //     (error) => console.log(new Date(), error),
+    //   //     // {enableHighAccuracy: true, timeout: 100000}
+    //   //     // If gps is not working, so uncomment next line
+    //   //     // {timeout: 10000, enableHighAccuracy: true}
+
+    //   //     // Next one works always (22-02-2019 16:44)
+    //   //     // {timeout: 100000000}
+
+    //   //     // This is new (implemented with Google gps) (22-02-2019 16:50)
+    //   //     // { enableHighAccuracy: true, distanceFilter: 0, interval:0, fastestInterval: 0 }
+    //   //     { enableHighAccuracy: true, distanceFilter: 0, interval:0, fastestInterval: 0 }
+    //   // ); 
+
+    }
+
+    // else if(nextAppState == "active"){
+
+    //   BackgroundGeolocation.checkStatus(status => {
+
+    //     // you don't need to check status before start (this is just the example)
+    //     if (status.isRunning) {
+
+    //       BackgroundGeolocation.stop(); //triggers start on start event
+
+    //       console.log('[INFO] BackgroundGeolocation service is running', status.isRunning);
+    //       console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
+    //       console.log('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
+
+
+    //     }
+
+    //   });
+
+      // console.log("cancelling all background jobs");
+
+      // cancel all background jobs
+      // BackgroundJob.cancelAll();
+
+    // }
 
     // Change app state
     this.setState({app_state: nextAppState});
@@ -171,6 +416,8 @@ class Dangers_Map extends Component {
 
   componentDidMount() {
        
+    console.log('component did mount');
+
     PushNotification.configure({
           onNotification: function(notification) {
             console.log('NOTIFICATION: ', notification);
@@ -260,13 +507,249 @@ class Dangers_Map extends Component {
             console.error(error);
           });  
 
+    BackgroundGeolocation.configure({
+    //   // startForeground: true,
+    //   // desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
+      stationaryRadius: 1,
+      distanceFilter: 1,
+      notificationTitle: 'Yo te cuido',
+      notificationText: 'Te avisaré si estás cerca de un peligro',
+    //   // // debug: false,
+    //   // // startOnBoot: false,
+    //   // // stopOnTerminate: true,
+    //   // // locationProvider: BackgroundGeolocation.ACTIVITY_PROVIDER,
+    //   locationProvider: BackgroundGeolocation.DISTANCE_FILTER_PROVIDER,
+    //   // // interval: 10000,
+      interval:1000,
+    //   // // fastestInterval: 5000,
+      fastestInterval: 1000,
+      activitiesInterval: 1000,
+    //   // stopOnStillActivity: false,
+    //   // url: 'http://192.168.81.15:3000/location',
+    //   // httpHeaders: {
+    //   //   'X-FOO': 'bar'
+    //   // },
+    //   // customize post properties
+    //   // postTemplate: {
+    //   //   lat: '@latitude',
+    //   //   lon: '@longitude',
+    //   //   foo: 'bar' // you can also add your own properties
+    //   // }
+    });
+
+    // This works sometimes
+    // Get initial location
+    BackgroundGeolocation.getCurrentLocation(location => {
+      
+      console.log('get current location : ' + location.latitude + location.longitude );
+
+      this.setState({ 
+
+        user_position: {
+
+          latitude: location.latitude, 
+          longitude: location.longitude
+
+        },
+
+        region: {
+
+          latitude: location.latitude, 
+          longitude: location.longitude, 
+          latitudeDelta: initial_latitude_delta,
+          longitudeDelta: initial_longitude_delta,
+
+
+        }
+
+      });
+
+      }, (error) => {
+
+        setTimeout(() => {
+
+          Alert.alert('Error obtaining current location', JSON.stringify(error));
+
+        }, 100);
+
+    });
+
+    // This works sometimes
+    BackgroundGeolocation.on('start', () => {
+      console.log('[INFO] BackgroundGeolocation service has been started');
+
+      BackgroundGeolocation.checkStatus(status => {
+        
+        console.log('[INFO] BackgroundGeolocation service is running', status.isRunning);
+        console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
+        console.log('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
+
+        if(status.isRunning){
+
+          Alert.alert("Geolocation is running");
+
+        }
+
+      });
+
+    });
+
+    // This works sometimes
+    BackgroundGeolocation.on('stop', () => {
+      console.log('[INFO] BackgroundGeolocation service has been stopped');
+
+
+      BackgroundGeolocation.checkStatus(status => {
+        
+        console.log('[INFO] BackgroundGeolocation service is running', status.isRunning);
+        console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
+        console.log('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
+
+        if(!status.isRunning){
+
+          Alert.alert("Geolocation is stopped");
+          
+        }
+
+      });
+
+    });
+
+     // This works sometimes
+    BackgroundGeolocation.on('location', (location) => {
+      // handle your locations here
+      // to perform long running operation on iOS
+      // you need to create background task
+
+      console.log("location has changed to :" + location.latitude + location.longitude);
+
+      this.setState({
+
+        // user_position: {latitude: location.latitude, longitude: location.longitude},
+        user_position: {
+
+            latitude: location.latitude, 
+            longitude: location.longitude
+
+          },
+
+          region: {
+
+            latitude: location.latitude, 
+            longitude: location.longitude, 
+            latitudeDelta: initial_latitude_delta,
+            longitudeDelta: initial_longitude_delta,
+
+          }
+
+      });
+
+    //   // BackgroundGeolocation.startTask(taskKey => {
+    //   //   // execute long running task
+    //   //   // eg. ajax post location
+
+    //   //   // console.log("location has changed");
+
+    //   //   this.setState({
+
+    //   //     // user_position: {latitude: location.latitude, longitude: location.longitude},
+    //   //     user_position: {
+
+    //   //         latitude: location.latitude, 
+    //   //         longitude: location.longitude
+
+    //   //       },
+
+    //   //       region: {
+
+    //   //         latitude: location.latitude, 
+    //   //         longitude: location.longitude, 
+    //   //         latitudeDelta: initial_latitude_delta,
+    //   //         longitudeDelta: initial_longitude_delta,
+
+
+    //   //       }
+
+    //   //   });
+
+      // function for calculate distance to risk_markers
+      this.calculate_distance_to_markers(); 
+
+
+    //   //   // const locations = this.state.locations.slice(0);
+    //   //   // locations.push(location);
+    //   //   // this.setState({ locations, region });
+    //   //   BackgroundGeolocation.endTask(taskKey);
+
+    //   // });
+
+    });
+
+
+    // BackgroundGeolocation.on('stationary', (stationaryLocation) => {
+    //   // handle stationary locations here
+    //   Actions.sendLocation(stationaryLocation);
+
+    // });
+
+    // BackgroundGeolocation.on('error', (error) => {
+    //   console.log('[ERROR] BackgroundGeolocation error:', error);
+    // });
+
+    // // BackgroundGeolocation.on('authorization', (status) => {
+    // //   console.log('[INFO] BackgroundGeolocation authorization status: ' + status);
+    // //   if (status !== BackgroundGeolocation.AUTHORIZED) {
+    // //     // we need to set delay or otherwise alert may not be shown
+    // //     setTimeout(() =>
+    // //       Alert.alert('App requires location tracking permission', 'Would you like to open app settings?', [
+    // //         { text: 'Yes', onPress: () => BackgroundGeolocation.showAppSettings() },
+    // //         { text: 'No', onPress: () => console.log('No Pressed'), style: 'cancel' }
+    // //       ]), 1000);
+    // //   }
+    // // });
+
+    BackgroundGeolocation.on('background', () => {
+      console.log('[INFO] App is in background');
+    });
+
+    // BackgroundGeolocation.on('foreground', () => {
+    //   console.log('[INFO] App is in foreground');
+    // });
+
+    // BackgroundGeolocation.checkStatus(status => {
+    //   console.log('[INFO] BackgroundGeolocation service is running', status.isRunning);
+    //   console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
+    //   console.log('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
+
+    //   // you don't need to check status before start (this is just the example)
+    //   if (!status.isRunning) {
+    //     BackgroundGeolocation.start(); //triggers start on start event
+    //   }
+    // });
 
   }
 
   componentWillUnmount(){
 
+    console.log('component will unmount');
+
     // Clear watch Id (stop asking location information)
-    Geolocation.clearWatch(this.watchId);
+    // Geolocation.clearWatch(this.watchId);
+
+    // This works sometimes
+    // BackgroundGeolocation.removeAllListeners();
+
+    // // Stop when compontent will unmount
+    // BackgroundGeolocation.checkStatus(status => {
+
+    //   // you don't need to check status before start (this is just the example)
+    //   if (status.isRunning) {
+
+    //     BackgroundGeolocation.stop(); //triggers stop on start event
+
+    //   }
+
+    // });
 
   };
 
@@ -388,58 +871,59 @@ class Dangers_Map extends Component {
   // Function for get current position and analize risk
   get_current_position_and_analize_risk(){
 
-    // Get current position (initial and when user location changes)
-    this.watchId = Geolocation.watchPosition(
+    // // Get current position (initial and when user location changes)
+    // this.watchId = Geolocation.watchPosition(
 
-        (position) => {
+    //     (position) => {
 
-            // console.log(position);
+    //         // console.log(position);
 
-            // this.test_notification();
+    //         // this.test_notification();
 
-            // console.log('position has changed. Lat: ' + position.coords.latitude + ', Long: ' + position.coords.longitude);
+    //         // console.log('position has changed. Lat: ' + position.coords.latitude + ', Long: ' + position.coords.longitude);
 
-            console.log(this.state.user_position.latitude == position.coords.latitude && this.state.user_position.longitude == position.coords.longitude ? 'Same pos' : 'Diff pos');
-
-
-            // Get user position
-            // Position has altitude!!! Maybe we can add altitude to location on map for distinguis between floors in a factory
-            this.setState({ 
-
-              user_position: {
-
-                latitude: position.coords.latitude, 
-                longitude: position.coords.longitude
-
-              },
-
-              region: {
-
-                latitude: position.coords.latitude, 
-                longitude: position.coords.longitude, 
-                latitudeDelta: initial_latitude_delta,
-                longitudeDelta: initial_longitude_delta,
+    //         console.log(this.state.user_position.latitude == position.coords.latitude && this.state.user_position.longitude == position.coords.longitude ? 'Same pos' : 'Diff pos');
 
 
-              }
+    //         // Get user position
+    //         // Position has altitude!!! Maybe we can add altitude to location on map for distinguis between floors in a factory
+    //         this.setState({ 
 
-            })
+    //           user_position: {
 
-            // function for calculate distance to risk_markers
-            this.calculate_distance_to_markers();
+    //             latitude: position.coords.latitude, 
+    //             longitude: position.coords.longitude
 
-        },
-        (error) => console.log(new Date(), error),
-        // {enableHighAccuracy: true, timeout: 100000}
-        // If gps is not working, so uncomment next line
-        // {timeout: 10000, enableHighAccuracy: true}
+    //           },
 
-        // Next one works always (22-02-2019 16:44)
-        // {timeout: 100000000}
+    //           region: {
 
-        // This is new (implemented with Google gps) (22-02-2019 16:50)
-        { enableHighAccuracy: true, distanceFilter: 0, interval:0, fastestInterval: 0 }
-    ); 
+    //             latitude: position.coords.latitude, 
+    //             longitude: position.coords.longitude, 
+    //             latitudeDelta: initial_latitude_delta,
+    //             longitudeDelta: initial_longitude_delta,
+
+
+    //           }
+
+    //         })
+
+    //         // function for calculate distance to risk_markers
+    //         this.calculate_distance_to_markers();
+
+    //     },
+    //     (error) => console.log(new Date(), error),
+    //     // {enableHighAccuracy: true, timeout: 100000}
+    //     // If gps is not working, so uncomment next line
+    //     // {timeout: 10000, enableHighAccuracy: true}
+
+    //     // Next one works always (22-02-2019 16:44)
+    //     // {timeout: 100000000}
+
+    //     // This is new (implemented with Google gps) (22-02-2019 16:50)
+    //     // { enableHighAccuracy: true, distanceFilter: 0, interval:0, fastestInterval: 0 }
+    //     { enableHighAccuracy: false, distanceFilter: 0, interval:0, fastestInterval: 0 }
+    // ); 
 
   }
 
@@ -710,6 +1194,36 @@ class Dangers_Map extends Component {
 
   }
 
+  manage_click_test(){
+
+    console.log(this.state.play_back_location);
+
+    if(this.state.play_back_location){
+
+      console.log("start location");
+
+      // This works sometimes
+      BackgroundGeolocation.start();
+
+    }
+
+    else{
+
+      console.log("stop location");
+
+      // This works sometimes
+      BackgroundGeolocation.stop();
+
+    };
+
+    this.setState({
+
+      play_back_location: !this.state.play_back_location,
+
+    });
+
+  };
+
   // Render method
   render() {
 
@@ -737,6 +1251,12 @@ class Dangers_Map extends Component {
               Peligros actuales: { this.state.places_markers.length}
 
             </Text>
+
+            <Button
+              buttonStyle = {{ zIndex: 1, position: 'absolute', top: 80, backgroundColor: this.state.play_back_location?'green':'red'}}
+              title = {this.state.play_back_location?'it"s stopped. START':'it"s running. STOP'}
+              onPress = {this.manage_click_test}
+            />
 
             <MapView
 

@@ -1,4 +1,4 @@
-package com.test_2;
+package com.yotecuido;
 
 import com.facebook.react.ReactActivity;
 

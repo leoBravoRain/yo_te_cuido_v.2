@@ -23,10 +23,13 @@ import Send_Suggestions from "./screens/send_suggestions_screen.js"
 import App_Introduction from "./screens/app_introduction.js"
 import Loading_Screen from "./screens/loading_screen.js"
 
+// import backtest from './screens/delete.js'
+
 // stack of screens of App
 const app_stack = {
   
-  // Dangers_Map: Dangers_Map,
+  // backtest: backtest,
+  Dangers_Map: Dangers_Map,
   Login: Login,
   Home: Home,
   Add_Danger: Add_Danger,
