@@ -22,8 +22,10 @@ import {
   // TouchableHighlight
 } from 'react-native';
 
-import { Button, Icon, Card, Divider } from 'react-native-elements';
+import { Button, Icon, Card, Divider, Tooltip } from 'react-native-elements';
 import { NavigationActions, withNavigation } from 'react-navigation';
+import {danger_state_definition} from '../global_variables.js'
+
 
 class Danger_Details extends Component {
 
@@ -208,11 +210,54 @@ class Danger_Details extends Component {
           <View style = {{elevation: 2, flex: 0, flexWrap: "wrap",flexDirection: "row", width: Dimensions.get('window').width}}>            
 
             {/*  Risk state */}
-            <Text style = {{ margin: 5, fontSize: 15, borderRadius: 10, padding: 8, color: "white", backgroundColor: this.select_pin_color(this.props.navigation.state.params.marker.state) }} >
 
-              {this.props.navigation.state.params.marker.state.replace("_"," ").toUpperCase()}
+            <Tooltip 
 
-            </Text>
+              // highlightColor = 'black'
+
+              backgroundColor = 'white'
+
+              // height = 50
+              containerStyle = {{
+                // backgroundColor: 'blue',
+                // : 'white',
+                // height: 300,
+                // paddingBottom: 50,
+                // paddingTop: 50,
+              }}
+
+              height = {Dimensions.get("window").height*0.5}
+
+              width = {Dimensions.get("window").width*0.9}
+
+              popover = {
+
+                <View>
+
+                  <Text style = {{fontWeight: 'bold', padding: 5, fontSize: 20}}>
+
+                    {this.props.navigation.state.params.marker.state.replace("_"," ").toUpperCase()}
+
+                  </Text>
+
+                  <Text style = {{fontWeight: 'normal', padding: 5}}>
+
+                    {danger_state_definition[this.props.navigation.state.params.marker.state]}
+
+                  </Text>
+
+                </View>
+              }
+
+            >
+
+              <Text style = {{elevation: 30, margin: 5, fontSize: 15, borderRadius: 10, padding: 8, color: "white", backgroundColor: this.select_pin_color(this.props.navigation.state.params.marker.state) }} >
+
+                {this.props.navigation.state.params.marker.state.replace("_"," ").toUpperCase()}
+
+              </Text>
+
+            </Tooltip>
 
             {/*  Floor number */}
             <Text style = {{ margin: 5, fontSize: 15, borderRadius: 10, padding: 8, color: "white", backgroundColor: "blue"}}>

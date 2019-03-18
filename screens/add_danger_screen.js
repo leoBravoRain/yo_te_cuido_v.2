@@ -22,6 +22,7 @@ import { Button, Icon } from 'react-native-elements';
 import { NavigationActions, withNavigation } from 'react-navigation';
 import ImagePicker from 'react-native-image-picker';
 import MapView from 'react-native-maps'
+import {danger_state_definition} from '../global_variables.js'
 
 // Index for item form
 var index = 0;
@@ -36,14 +37,6 @@ var index = 0;
 // 6: add map
 var max_form_items = 7;
 
-
-// Danger state definition
-var danger_state_definition = {
-
-  'sin_control': "No tiene ninguna medida de control actualmente",
-  'controlado': "Presenta alguna medida de control actualmente",
-  'eliminado': "El peligro ya no existe",
-}
 
 class Add_Danger extends Component {
 
@@ -491,7 +484,7 @@ class Add_Danger extends Component {
 
             </Picker>
 
-            <Text style = {{ textAlign: "center" , "margin": 30, backgroundColor: 'rgba(158,133,0,0.8)', color: "white", padding: 5, borderRadius: 50}}>
+            <Text style = {{ textAlign: "center" , "margin": 30, backgroundColor: 'rgba(158,133,0,0.8)', color: "white", padding: 10, borderRadius: 50}}>
 
               {danger_state_definition[this.state.danger_state]}
 

@@ -22,6 +22,7 @@ import { Button, Icon } from 'react-native-elements';
 import { NavigationActions, withNavigation } from 'react-navigation';
 import ImagePicker from 'react-native-image-picker';
 import MapView from 'react-native-maps'
+import {danger_state_definition} from '../global_variables.js'
 
 // Index for item form
 index = 0;
@@ -187,6 +188,12 @@ class Change_Danger_State extends Component {
             <Picker.Item label="Eliminado" value="eliminado" />
 
           </Picker>
+
+          <Text style = {{ textAlign: "center" , "margin": 30, backgroundColor: 'rgba(158,133,0,0.8)', color: "white", padding: 10, borderRadius: 50}}>
+
+            {danger_state_definition[this.state.danger_state]}
+
+          </Text>
 
 
           <Button

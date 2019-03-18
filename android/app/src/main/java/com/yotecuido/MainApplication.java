@@ -4,12 +4,10 @@ import android.app.Application;
 
 import com.facebook.react.ReactApplication;
 import com.marianhello.bgloc.react.BackgroundGeolocationPackage;
-import com.pilloxa.backgroundjob.BackgroundJobPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 // import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.imagepicker.ImagePickerPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
-import com.agontuk.RNFusedLocation.RNFusedLocationPackage;
 import com.showlocationservicesdialogbox.LocationServicesDialogBoxPackage;
 import br.com.dopaminamob.gpsstate.GPSStatePackage;
 // import com.agontuk.RNFusedLocation.RNFusedLocationPackage;
@@ -36,14 +34,12 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
             new BackgroundGeolocationPackage(),
-            new BackgroundJobPackage(),
             new VectorIconsPackage(),
             new ImagePickerPackage(),
             new RNGestureHandlerPackage(),
             new LocationServicesDialogBoxPackage(),
             new GPSStatePackage(),
             new MapsPackage(),
-            new RNFusedLocationPackage(),
             new ReactNativePushNotificationPackage()
       );
     }

@@ -29,7 +29,7 @@ import Loading_Screen from "./screens/loading_screen.js"
 const app_stack = {
   
   // backtest: backtest,
-  Dangers_Map: Dangers_Map,
+  // Dangers_Map: Dangers_Map,
   Login: Login,
   Home: Home,
   Add_Danger: Add_Danger,

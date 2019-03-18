@@ -101,7 +101,7 @@ android {
         applicationId "com.yotecuido"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 14
+        versionCode 15
         versionName "1.0"
 
         multiDexEnabled true
@@ -150,12 +150,10 @@ android {
 
 dependencies {
     implementation project(':react-native-mauron85-background-geolocation')
-    implementation project(':react-native-background-job')
     implementation project(':react-native-vector-icons')
     implementation project(':react-native-push-notification')
     implementation project(':react-native-image-picker')
     implementation project(':react-native-gesture-handler')
-    implementation project(':react-native-geolocation-service')
     implementation project(':react-native-android-location-services-dialog-box')
     implementation project(':react-native-gps-state')
     // implementation project(':react-native-geolocation-service')
@@ -167,9 +165,9 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
     // For Geolocation service dependencies version problem
-    compile(project(':react-native-geolocation-service')) {
-        exclude group: 'com.google.android.gms', module: 'play-services-location'
-    }
+    // compile(project(':react-native-geolocation-service')) {
+    //     exclude group: 'com.google.android.gms', module: 'play-services-location'
+    // }
 
     // For Push Notification service dependencies version problem
     compile(project(':react-native-push-notification')) {

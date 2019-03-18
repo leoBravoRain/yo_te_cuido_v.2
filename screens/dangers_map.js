@@ -20,27 +20,19 @@ import {
   Dimensions,
   AppState
 } from 'react-native';
-
-import { Button, Icon } from 'react-native-elements';
+import { Button, Icon,Tooltip } from 'react-native-elements';
 import { NavigationActions, withNavigation } from 'react-navigation';
 import ImagePicker from 'react-native-image-picker';
 import MapView from 'react-native-maps'
 import haversine from "haversine";
-
-import Geolocation from 'react-native-geolocation-service';
-
 import PushNotification from 'react-native-push-notification';
-// import PushController from './push_notification_service.js';
-
-// import BackgroundTask from 'react-native-background-task'
-// import BackgroundJob from 'react-native-background-job';
-
 import BackgroundGeolocation from 'react-native-mauron85-background-geolocation';
 
 
 // Limit to risk
 // Meters
-const limit_dist_to_risk = 10;
+// const limit_dist_to_risk = 10; First value and it was very close to danger
+const limit_dist_to_risk = 15;
 
 // Vibration pattern
 const PATTERN = [300, 500] // wait, vibrate, wait, vibrate, ...
@@ -92,87 +84,6 @@ body_danger_alert = '¡Cuidado! Estás muy cerca de un peligro';
 button_danger_alert = 'Me cuidaré';
 notification_action_danger_alert = "Ver peligro";
 
-// // Background task
-// BackgroundTask.define(() => {
-
-//   console.log('HELLO FROM BACKGROUND');
-
-//   BackgroundTask.finish();
-
-// });
- 
-// const regularJobKey = "regularJobKey";
-
-// BackgroundJob.register({
-
-//   jobKey: regularJobKey,
-
-//   job: () => backgroundFunction(),
-
-// });
-
-// function backgroundFunction(){
-
-//   console.log("new background function");
-
-//   // console.log(this);
-//   // Geolocation.clearWatch(this.watchId);
-
-//   // this.global_watchId = Geolocation.watchPosition(
-//   Geolocation.watchPosition(
-
-//       (position) => {
-
-//           console.log('new watch position function on background');
-
-//           // // this.test_notification();
-
-//           // // console.log('position has changed. Lat: ' + position.coords.latitude + ', Long: ' + position.coords.longitude);
-
-//           // // console.log(this.state.user_position.latitude == position.coords.latitude && this.state.user_position.longitude == position.coords.longitude ? 'Same pos' : 'Diff pos');
-
-
-//           // // Get user position
-//           // // Position has altitude!!! Maybe we can add altitude to location on map for distinguis between floors in a factory
-//           // this.setState({ 
-
-//           //   user_position: {
-
-//           //     latitude: position.coords.latitude, 
-//           //     longitude: position.coords.longitude
-
-//           //   },
-
-//           //   region: {
-
-//           //     latitude: position.coords.latitude, 
-//           //     longitude: position.coords.longitude, 
-//           //     latitudeDelta: initial_latitude_delta,
-//           //     longitudeDelta: initial_longitude_delta,
-
-
-//           //   }
-
-//           // })
-
-//           // // function for calculate distance to risk_markers
-//           // this.calculate_distance_to_markers();
-
-//       },
-//       (error) => console.log(new Date(), error),
-//       // {enableHighAccuracy: true, timeout: 100000}
-//       // If gps is not working, so uncomment next line
-//       // {timeout: 10000, enableHighAccuracy: true}
-
-//       // Next one works always (22-02-2019 16:44)
-//       // {timeout: 100000000}
-
-//       // This is new (implemented with Google gps) (22-02-2019 16:50)
-//       // { enableHighAccuracy: true, distanceFilter: 0, interval:0, fastestInterval: 0 }
-//       { enableHighAccuracy: true, distanceFilter: 0, interval:0, fastestInterval: 0 }
-//   ); 
-
-// }
 
 // class
 class Dangers_Map extends Component {
@@ -208,7 +119,8 @@ class Dangers_Map extends Component {
       // App state
       app_state: AppState.currentState,
 
-      play_back_location: false,
+      // location is enable
+      location_is_enable: false,
 
     };
 
@@ -217,10 +129,6 @@ class Dangers_Map extends Component {
     this.filter_markers = this.filter_markers.bind(this);
     this.render_area_filter = this.render_area_filter.bind(this);
     this.local_notyfication = this.local_notyfication.bind(this);
-
-    // testing
-    this.test_notification = this.test_notification.bind(this);
-    this.manage_click_test = this.manage_click_test.bind(this);
 
   }
 
@@ -254,159 +162,6 @@ class Dangers_Map extends Component {
   _handleAppStateChange = (nextAppState) => {
 
     console.log("app state has changed to: " + nextAppState);
-
-    // console.log('watch id: ' + this.watchId);
-
-    // console.log(this);
-
-    if(nextAppState == "background"){
-
-
-      // // Get initial location
-      // BackgroundGeolocation.getCurrentLocation(location => {
-        
-      //   // console.log(location);
-
-      //   this.setState({ 
-
-      //     user_position: {
-
-      //       latitude: location.latitude, 
-      //       longitude: location.longitude
-
-      //     },
-
-      //     region: {
-
-      //       latitude: location.latitude, 
-      //       longitude: location.longitude, 
-      //       latitudeDelta: initial_latitude_delta,
-      //       longitudeDelta: initial_longitude_delta,
-
-
-      //     }
-
-      //   });
-
-      //   }, (error) => {
-
-      //     setTimeout(() => {
-
-      //       Alert.alert('Error obtaining current location', JSON.stringify(error));
-
-      //     }, 100);
-
-      // });
-
-      // BackgroundGeolocation.start();
-
-      // BackgroundGeolocation.forceSync();
-
-    //   BackgroundGeolocation.checkStatus(status => {
-    //     console.log('[INFO] BackgroundGeolocation service is running', status.isRunning);
-    //     console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
-    //     console.log('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
-
-    //     // you don't need to check status before start (this is just the example)
-    //     if (!status.isRunning) {
-    //       BackgroundGeolocation.start(); //triggers start on start event
-    //     }
-        
-    //   });
-
-    //   // BackgroundTask.schedule();
-    //   // BackgroundJob.schedule(backgroundJob);
-
-    //   // BackgroundJob.schedule({
-
-    //   //   jobKey: regularJobKey,
-    //   //   notificationTitle: "Hi!",
-    //   //   notificationText: "I'm the BackgroundJob",
-    //   //   period: 2000,
-    //   //   exact: true
-    //   // });
-
-    //   // Geolocation.clearWatch(this.watchId);
-
-    //   // this.watchId = Geolocation.watchPosition(
-
-    //   //     (position) => {
-
-    //   //         console.log('new watch position function');
-
-    //   //         // this.test_notification();
-
-    //   //         // console.log('position has changed. Lat: ' + position.coords.latitude + ', Long: ' + position.coords.longitude);
-
-    //   //         console.log(this.state.user_position.latitude == position.coords.latitude && this.state.user_position.longitude == position.coords.longitude ? 'Same pos' : 'Diff pos');
-
-
-    //   //         // Get user position
-    //   //         // Position has altitude!!! Maybe we can add altitude to location on map for distinguis between floors in a factory
-    //   //         this.setState({ 
-
-    //   //           user_position: {
-
-    //   //             latitude: position.coords.latitude, 
-    //   //             longitude: position.coords.longitude
-
-    //   //           },
-
-    //   //           region: {
-
-    //   //             latitude: position.coords.latitude, 
-    //   //             longitude: position.coords.longitude, 
-    //   //             latitudeDelta: initial_latitude_delta,
-    //   //             longitudeDelta: initial_longitude_delta,
-
-
-    //   //           }
-
-    //   //         })
-
-    //   //         // function for calculate distance to risk_markers
-    //   //         this.calculate_distance_to_markers();
-
-    //   //     },
-    //   //     (error) => console.log(new Date(), error),
-    //   //     // {enableHighAccuracy: true, timeout: 100000}
-    //   //     // If gps is not working, so uncomment next line
-    //   //     // {timeout: 10000, enableHighAccuracy: true}
-
-    //   //     // Next one works always (22-02-2019 16:44)
-    //   //     // {timeout: 100000000}
-
-    //   //     // This is new (implemented with Google gps) (22-02-2019 16:50)
-    //   //     // { enableHighAccuracy: true, distanceFilter: 0, interval:0, fastestInterval: 0 }
-    //   //     { enableHighAccuracy: true, distanceFilter: 0, interval:0, fastestInterval: 0 }
-    //   // ); 
-
-    }
-
-    // else if(nextAppState == "active"){
-
-    //   BackgroundGeolocation.checkStatus(status => {
-
-    //     // you don't need to check status before start (this is just the example)
-    //     if (status.isRunning) {
-
-    //       BackgroundGeolocation.stop(); //triggers start on start event
-
-    //       console.log('[INFO] BackgroundGeolocation service is running', status.isRunning);
-    //       console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
-    //       console.log('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
-
-
-    //     }
-
-    //   });
-
-      // console.log("cancelling all background jobs");
-
-      // cancel all background jobs
-      // BackgroundJob.cancelAll();
-
-    // }
 
     // Change app state
     this.setState({app_state: nextAppState});
@@ -471,15 +226,9 @@ class Dangers_Map extends Component {
             var places_markers_from_server = [];
             var initial_places_markers = responseJson;
 
-            // console.log(responseJson.length)
 
             // Iterate over each danger
             for(var i = 0; i < responseJson.length; i++){
-
-              // add danger to marler to display on map
-              // places_markers_from_server.push(responseJson[i]);
-              // initial_places_markers.push(responseJson[i]);
-
 
               // If danger is active
               if(responseJson[i].state != "eliminado"){
@@ -506,250 +255,18 @@ class Dangers_Map extends Component {
           .catch((error) => {
             console.error(error);
           });  
-
-    BackgroundGeolocation.configure({
-    //   // startForeground: true,
-    //   // desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
-      stationaryRadius: 1,
-      distanceFilter: 1,
-      notificationTitle: 'Yo te cuido',
-      notificationText: 'Te avisaré si estás cerca de un peligro',
-    //   // // debug: false,
-    //   // // startOnBoot: false,
-    //   // // stopOnTerminate: true,
-    //   // // locationProvider: BackgroundGeolocation.ACTIVITY_PROVIDER,
-    //   locationProvider: BackgroundGeolocation.DISTANCE_FILTER_PROVIDER,
-    //   // // interval: 10000,
-      interval:1000,
-    //   // // fastestInterval: 5000,
-      fastestInterval: 1000,
-      activitiesInterval: 1000,
-    //   // stopOnStillActivity: false,
-    //   // url: 'http://192.168.81.15:3000/location',
-    //   // httpHeaders: {
-    //   //   'X-FOO': 'bar'
-    //   // },
-    //   // customize post properties
-    //   // postTemplate: {
-    //   //   lat: '@latitude',
-    //   //   lon: '@longitude',
-    //   //   foo: 'bar' // you can also add your own properties
-    //   // }
-    });
-
-    // This works sometimes
-    // Get initial location
-    BackgroundGeolocation.getCurrentLocation(location => {
-      
-      console.log('get current location : ' + location.latitude + location.longitude );
-
-      this.setState({ 
-
-        user_position: {
-
-          latitude: location.latitude, 
-          longitude: location.longitude
-
-        },
-
-        region: {
-
-          latitude: location.latitude, 
-          longitude: location.longitude, 
-          latitudeDelta: initial_latitude_delta,
-          longitudeDelta: initial_longitude_delta,
-
-
-        }
-
-      });
-
-      }, (error) => {
-
-        setTimeout(() => {
-
-          Alert.alert('Error obtaining current location', JSON.stringify(error));
-
-        }, 100);
-
-    });
-
-    // This works sometimes
-    BackgroundGeolocation.on('start', () => {
-      console.log('[INFO] BackgroundGeolocation service has been started');
-
-      BackgroundGeolocation.checkStatus(status => {
-        
-        console.log('[INFO] BackgroundGeolocation service is running', status.isRunning);
-        console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
-        console.log('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
-
-        if(status.isRunning){
-
-          Alert.alert("Geolocation is running");
-
-        }
-
-      });
-
-    });
-
-    // This works sometimes
-    BackgroundGeolocation.on('stop', () => {
-      console.log('[INFO] BackgroundGeolocation service has been stopped');
-
-
-      BackgroundGeolocation.checkStatus(status => {
-        
-        console.log('[INFO] BackgroundGeolocation service is running', status.isRunning);
-        console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
-        console.log('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
-
-        if(!status.isRunning){
-
-          Alert.alert("Geolocation is stopped");
-          
-        }
-
-      });
-
-    });
-
-     // This works sometimes
-    BackgroundGeolocation.on('location', (location) => {
-      // handle your locations here
-      // to perform long running operation on iOS
-      // you need to create background task
-
-      console.log("location has changed to :" + location.latitude + location.longitude);
-
-      this.setState({
-
-        // user_position: {latitude: location.latitude, longitude: location.longitude},
-        user_position: {
-
-            latitude: location.latitude, 
-            longitude: location.longitude
-
-          },
-
-          region: {
-
-            latitude: location.latitude, 
-            longitude: location.longitude, 
-            latitudeDelta: initial_latitude_delta,
-            longitudeDelta: initial_longitude_delta,
-
-          }
-
-      });
-
-    //   // BackgroundGeolocation.startTask(taskKey => {
-    //   //   // execute long running task
-    //   //   // eg. ajax post location
-
-    //   //   // console.log("location has changed");
-
-    //   //   this.setState({
-
-    //   //     // user_position: {latitude: location.latitude, longitude: location.longitude},
-    //   //     user_position: {
-
-    //   //         latitude: location.latitude, 
-    //   //         longitude: location.longitude
-
-    //   //       },
-
-    //   //       region: {
-
-    //   //         latitude: location.latitude, 
-    //   //         longitude: location.longitude, 
-    //   //         latitudeDelta: initial_latitude_delta,
-    //   //         longitudeDelta: initial_longitude_delta,
-
-
-    //   //       }
-
-    //   //   });
-
-      // function for calculate distance to risk_markers
-      this.calculate_distance_to_markers(); 
-
-
-    //   //   // const locations = this.state.locations.slice(0);
-    //   //   // locations.push(location);
-    //   //   // this.setState({ locations, region });
-    //   //   BackgroundGeolocation.endTask(taskKey);
-
-    //   // });
-
-    });
-
-
-    // BackgroundGeolocation.on('stationary', (stationaryLocation) => {
-    //   // handle stationary locations here
-    //   Actions.sendLocation(stationaryLocation);
-
-    // });
-
-    // BackgroundGeolocation.on('error', (error) => {
-    //   console.log('[ERROR] BackgroundGeolocation error:', error);
-    // });
-
-    // // BackgroundGeolocation.on('authorization', (status) => {
-    // //   console.log('[INFO] BackgroundGeolocation authorization status: ' + status);
-    // //   if (status !== BackgroundGeolocation.AUTHORIZED) {
-    // //     // we need to set delay or otherwise alert may not be shown
-    // //     setTimeout(() =>
-    // //       Alert.alert('App requires location tracking permission', 'Would you like to open app settings?', [
-    // //         { text: 'Yes', onPress: () => BackgroundGeolocation.showAppSettings() },
-    // //         { text: 'No', onPress: () => console.log('No Pressed'), style: 'cancel' }
-    // //       ]), 1000);
-    // //   }
-    // // });
-
-    BackgroundGeolocation.on('background', () => {
-      console.log('[INFO] App is in background');
-    });
-
-    // BackgroundGeolocation.on('foreground', () => {
-    //   console.log('[INFO] App is in foreground');
-    // });
-
-    // BackgroundGeolocation.checkStatus(status => {
-    //   console.log('[INFO] BackgroundGeolocation service is running', status.isRunning);
-    //   console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
-    //   console.log('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
-
-    //   // you don't need to check status before start (this is just the example)
-    //   if (!status.isRunning) {
-    //     BackgroundGeolocation.start(); //triggers start on start event
-    //   }
-    // });
-
   }
+
 
   componentWillUnmount(){
 
     console.log('component will unmount');
-
-    // Clear watch Id (stop asking location information)
-    // Geolocation.clearWatch(this.watchId);
-
+    
     // This works sometimes
-    // BackgroundGeolocation.removeAllListeners();
+    BackgroundGeolocation.removeAllListeners();
 
-    // // Stop when compontent will unmount
-    // BackgroundGeolocation.checkStatus(status => {
-
-    //   // you don't need to check status before start (this is just the example)
-    //   if (status.isRunning) {
-
-    //     BackgroundGeolocation.stop(); //triggers stop on start event
-
-    //   }
-
-    // });
+    // Stop back-geo service
+    BackgroundGeolocation.stop();
 
   };
 
@@ -794,7 +311,6 @@ class Dangers_Map extends Component {
 
 
       // Remove markers already alerted (from list state)
-      // markers_not_alerted_yet = markers_not_alerted_yet.map( (id_marker) => {if(!this.state.markers_already_alerted.includes(id_marker)){ return id_marker} });
 
       // Iterate over each marker
       for(let id_marker of markers_not_alerted_yet){
@@ -841,7 +357,6 @@ class Dangers_Map extends Component {
         }
 
         // If app is in background
-        // else if(this.state.app_state == "background"){
         else{
 
           // Show notification
@@ -855,75 +370,200 @@ class Dangers_Map extends Component {
 
   }
 
-  test_notification(add_ubication = true){
-    // Send notification
-    PushNotification.localNotification({
-    
-      /* iOS and Android properties */
-      title: "test", // (optional)
-      message:  "testing" + (add_ubication != null ? this.state.user_position.latitude + ' ' + this.state.user_position.longitude : ' not location'), // (required)
-      playSound: true, // (optional) default: true
-      soundName: 'default', // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
-    
-    });
 
-  }
-  // Function for get current position and analize risk
+  // Function for get current (and always) position and analize risk
   get_current_position_and_analize_risk(){
 
-    // // Get current position (initial and when user location changes)
-    // this.watchId = Geolocation.watchPosition(
+    // Initial coniguration of geolocation
+    BackgroundGeolocation.configure({
+      locationProvider: BackgroundGeolocation.ACTIVITY_PROVIDER,
+      desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
+      stationaryRadius: 1,
+      distanceFilter: 1,
+      notificationTitle: 'Yo te cuido',
+      notificationText: 'Te avisaré si estás cerca de un peligro',
+      interval:1000,
+      fastestInterval: 1000,
+      activitiesInterval: 1000,
+    });
 
-    //     (position) => {
+    // Get initial location
+    BackgroundGeolocation.getCurrentLocation(location => {
+      
+      console.log('get current location : ' + location.latitude + location.longitude );
 
-    //         // console.log(position);
+      this.setState({ 
 
-    //         // this.test_notification();
+        user_position: {
 
-    //         // console.log('position has changed. Lat: ' + position.coords.latitude + ', Long: ' + position.coords.longitude);
+          latitude: location.latitude, 
+          longitude: location.longitude
 
-    //         console.log(this.state.user_position.latitude == position.coords.latitude && this.state.user_position.longitude == position.coords.longitude ? 'Same pos' : 'Diff pos');
+        },
 
+        region: {
 
-    //         // Get user position
-    //         // Position has altitude!!! Maybe we can add altitude to location on map for distinguis between floors in a factory
-    //         this.setState({ 
-
-    //           user_position: {
-
-    //             latitude: position.coords.latitude, 
-    //             longitude: position.coords.longitude
-
-    //           },
-
-    //           region: {
-
-    //             latitude: position.coords.latitude, 
-    //             longitude: position.coords.longitude, 
-    //             latitudeDelta: initial_latitude_delta,
-    //             longitudeDelta: initial_longitude_delta,
+          latitude: location.latitude, 
+          longitude: location.longitude, 
+          latitudeDelta: initial_latitude_delta,
+          longitudeDelta: initial_longitude_delta,
 
 
-    //           }
+        }
 
-    //         })
+      });
 
-    //         // function for calculate distance to risk_markers
-    //         this.calculate_distance_to_markers();
+      }, (error) => {
 
-    //     },
-    //     (error) => console.log(new Date(), error),
-    //     // {enableHighAccuracy: true, timeout: 100000}
-    //     // If gps is not working, so uncomment next line
-    //     // {timeout: 10000, enableHighAccuracy: true}
+        setTimeout(() => {
 
-    //     // Next one works always (22-02-2019 16:44)
-    //     // {timeout: 100000000}
+          Alert.alert('Error obtaining current location', JSON.stringify(error));
 
-    //     // This is new (implemented with Google gps) (22-02-2019 16:50)
-    //     // { enableHighAccuracy: true, distanceFilter: 0, interval:0, fastestInterval: 0 }
-    //     { enableHighAccuracy: false, distanceFilter: 0, interval:0, fastestInterval: 0 }
-    // ); 
+        }, 100);
+
+    });
+
+    // Add listener when the geolocation srevice start
+    BackgroundGeolocation.on('start', () => {
+
+      console.log('[INFO] BackgroundGeolocation service has been started');
+
+      // Check status of back service
+      BackgroundGeolocation.checkStatus(status => {
+        
+        console.log('[INFO] START. BackgroundGeolocation service is running', status.isRunning);
+        // console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
+        // console.log('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
+
+        // If service is runnig
+        if(status.isRunning){
+
+          // change state
+          this.setState({
+
+            location_is_enable: true,
+
+          })
+
+        }
+
+      });
+
+    });
+
+    // Add listener to stop event of Background service
+    BackgroundGeolocation.on('stop', () => {
+
+      console.log('[INFO] BackgroundGeolocation service has been stopped');
+
+      // Check status of service
+      BackgroundGeolocation.checkStatus(status => {
+        
+        console.log('[INFO] STOP. BackgroundGeolocation service is running', status.isRunning);
+        // console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
+        // console.log('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
+
+        // If service is not running
+        if(!status.isRunning){
+
+          // change state
+          this.setState({
+
+            location_is_enable: false,
+
+          })
+          
+        }
+
+      });
+
+    });
+
+     // Add listener when location changes
+    BackgroundGeolocation.on('location', (location) => {
+    
+      console.log("location has changed to :" + location.latitude + location.longitude);
+
+      // change state: user position and region
+      this.setState({
+
+        user_position: {
+
+            latitude: location.latitude, 
+            longitude: location.longitude
+
+          },
+
+          region: {
+
+            latitude: location.latitude, 
+            longitude: location.longitude, 
+            latitudeDelta: initial_latitude_delta,
+            longitudeDelta: initial_longitude_delta,
+
+          }
+
+      });
+
+      // function for calculate distance to risk_markers
+      this.calculate_distance_to_markers(); 
+
+    });
+
+
+    // Check status and start service depending on conditions
+    BackgroundGeolocation.checkStatus(status => {
+      
+      console.log(status.isRunning);
+
+      // If service is not running
+      if(status.isRunning){
+
+        console.log('service is running');
+
+        if(this.state.location_is_enable){
+
+          console.log('location is enable')
+
+          BackgroundGeolocation.stop();
+
+          BackgroundGeolocation.start();
+
+          // this.props.navigation.navigate('Dangers_Map');
+
+        }
+
+        // This is not working
+        else{
+
+          console.log('location isn"t enable');
+
+          console.log('new implementation 4');
+
+          BackgroundGeolocation.stop();
+
+          setTimeout(() => BackgroundGeolocation.start(), 2000);
+
+        }
+
+      }
+
+      // This works
+      else{
+
+        console.log('It"s not running');
+
+        // BackgroundGeolocation.stop();
+
+        BackgroundGeolocation.start();
+
+        // this.props.navigation.navigate('Dangers_Map');
+
+      }
+
+    });
+
+
 
   }
 
@@ -1164,19 +804,11 @@ class Dangers_Map extends Component {
     // Send notification
     PushNotification.localNotification({
       /* Android Only Properties */
-      // id: '0', // (optional) Valid unique 32 bit integer specified as string. default: Autogenerated Unique ID
-      // ticker: "My Notification Ticker", // (optional)
       autoCancel: true, // (optional) default: true
-      // largeIcon: "ic_launcher", // (optional) default: "ic_launcher"
-      // smallIcon: "ic_notification", // (optional) default: "ic_notification" with fallback for "ic_launcher"
       bigText: body_danger_alert, // (optional) default: "message" prop
       subText: "Peligro cercano", // (optional) default: none
-      // color: "red", // (optional) default: system default
       vibrate: true, // (optional) default: true
       vibration: 1000, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
-      // tag: 'hola', // (optional) add tag to message
-      // group: "group", // (optional) add group to message
-      // ongoing: false, // (optional) set whether this is an "ongoing" notification
       priority: "high", // (optional) set notification priority, default: high
       visibility: "private", // (optional) set notification visibility, default: private
       importance: "high", // (optional) set notification importance, default: high
@@ -1188,41 +820,11 @@ class Dangers_Map extends Component {
       playSound: true, // (optional) default: true
       soundName: 'default', // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
       number: '10', // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
-      // repeatType: 'day', // (optional) Repeating interval. Check 'Repeating Notifications' section for more info.
       actions: '[Ver]',  // (Android only) See the doc for notification actions to know more
+
     });
 
   }
-
-  manage_click_test(){
-
-    console.log(this.state.play_back_location);
-
-    if(this.state.play_back_location){
-
-      console.log("start location");
-
-      // This works sometimes
-      BackgroundGeolocation.start();
-
-    }
-
-    else{
-
-      console.log("stop location");
-
-      // This works sometimes
-      BackgroundGeolocation.stop();
-
-    };
-
-    this.setState({
-
-      play_back_location: !this.state.play_back_location,
-
-    });
-
-  };
 
   // Render method
   render() {
@@ -1231,20 +833,39 @@ class Dangers_Map extends Component {
 
         <View style = {styles.container_flex} >
 
+          <View 
+
+            style = {{
+
+              position: 'absolute',
+              top: 0,
+              margin: 15,
+              // backgroundColor: 'red',
+              zIndex: 1,
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+
+            }}
+
+          >
+
             <Text style={{ 
 
               color: "white", 
               "textAlign": 'center', 
-              margin: 50,
+              // margin: 50,
               // fontWeight: 'bold', 
               textDecorationStyle:'solid',
               backgroundColor: 'rgba(63, 95, 224,0.8)',
-              position: "absolute",
-              top: -30,
+              // position: "absolute",
+              // top: -30,
               borderRadius: 50, 
               padding: 15,
               justifyContent: 'center',
               elevation: 5,
+              // left:-20,
 
             }}>
 
@@ -1252,11 +873,92 @@ class Dangers_Map extends Component {
 
             </Text>
 
-            <Button
-              buttonStyle = {{ zIndex: 1, position: 'absolute', top: 80, backgroundColor: this.state.play_back_location?'green':'red'}}
-              title = {this.state.play_back_location?'it"s stopped. START':'it"s running. STOP'}
-              onPress = {this.manage_click_test}
-            />
+            {this.state.location_is_enable
+
+              ?
+
+                <Tooltip 
+
+                  backgroundColor = 'white'
+
+                  // height = 50
+                  containerStyle = {{
+                    // backgroundColor: 'blue',
+                    // : 'white',
+                    // height: 300,
+                    // paddingBottom: 50,
+                    // paddingTop: 50,
+                  }}
+
+                  height = {Dimensions.get("window").height*0.5}
+
+                  width = {Dimensions.get("window").width*0.9}
+
+                  popover = {
+
+                    <View>
+
+                      <Text style = {{fontWeight: 'bold', padding: 5, fontSize: 20}}>
+
+                        Modo guardian {this.state.location_is_enable?'activado':'desactivado'} 
+
+                      </Text>
+
+                      <Text style = {{fontWeight: 'normal', padding: 5}}>
+
+                        El sistema automáticamente te avisará si es que estás cerca de un peligro.
+
+                        {'\n \n '}
+
+                        Solo debes mantener abierta la app en esta sección. 
+
+                        {'\n \n '}
+
+                        Puedes ocultar la app
+                        y abrir otras, o incluso bloquear tu celular, pero 
+
+                        {'\n \n'} 
+
+                      </Text>
+
+                      <Text style = {{fontWeight: 'bold', padding: 5, fontSize: 15}}>
+
+                        NO DEBES CERRARLA
+
+                      </Text>
+
+                    </View>
+                  }
+
+                >
+
+                  <Icon
+                    raised
+                    name='shield-account'
+                    type='material-community'  
+                    // onPress ={() => navigation.push('Dangers_Map')}
+                    // color='white'
+                    color = {this.state.location_is_enable ? 'green' : 'red'}
+                    iconStyle = {{
+                      // backgroundColor: 'black',
+                      elevation: 5,
+                      // height: 50,
+                    }}
+                    size = {27}
+
+                  />
+
+                </Tooltip>
+
+              :
+
+                <ProgressBarAndroid color = 'white'/>
+
+            }
+
+            
+
+          </View>
 
             <MapView
 
